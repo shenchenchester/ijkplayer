@@ -128,7 +128,7 @@ static void *KVO_AVPlayerItem_playbackBufferEmpty       = &KVO_AVPlayerItem_play
     // while AVPlayer is prerolling, it could resume itself.
     // foring start could
     BOOL _isPrerolling;
-
+    
     NSTimeInterval _seekingTime;
     BOOL _isSeeking;
     BOOL _isError;
@@ -142,9 +142,9 @@ static void *KVO_AVPlayerItem_playbackBufferEmpty       = &KVO_AVPlayerItem_play
     BOOL _playbackBufferFull;
     
     BOOL _playingBeforeInterruption;
-
+    
     IJKNotificationManager *_notificationManager;
-
+    
     float _playbackRate;
     float _playbackVolume;
 }
@@ -164,55 +164,45 @@ static void *KVO_AVPlayerItem_playbackBufferEmpty       = &KVO_AVPlayerItem_play
 @synthesize shouldAutoplay              = _shouldAutoplay;
 @synthesize isDanmakuMediaAirPlay       = _isDanmakuMediaAirPlay;
 
-static IJKAVMoviePlayerController* instance;
-
-- (id)initWithContentURL:(NSURL *)aUrl
+- (id)initWithContentURL:(NSURL *)aUrl withOptions:(NSDictionary *)options
 {
     self = [super init];
     if (self != nil) {
         self.scalingMode = IJKMPMovieScalingModeAspectFit;
         self.shouldAutoplay = NO;
-
+        
         _playUrl = aUrl;
-
+        
         _avView = [[IJKAVPlayerLayerView alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
         self.view = _avView;
-
+        
         // TODO:
         [[IJKAudioKit sharedInstance] setupAudioSession];
-
+        
         _isPrerolling           = NO;
-
+        
         _isSeeking              = NO;
         _isError                = NO;
         _isCompleted            = NO;
         self.bufferingProgress  = 0;
-
+        
         _playbackLikelyToKeeyUp = NO;
         _playbackBufferEmpty    = YES;
         _playbackBufferFull     = NO;
-
+        
         _playbackRate           = 1.0f;
         _playbackVolume         = 1.0f;
         // init extra
         [self setScreenOn:YES];
-
+        
         _notificationManager = [[IJKNotificationManager alloc] init];
+        _playAsset = [AVURLAsset URLAssetWithURL:_playUrl options:options];
+        _playerItem = [AVPlayerItem playerItemWithAsset:_playAsset];
     }
     return self;
 }
 
-+ (id)getInstance:(NSString *)aUrl
-{
-    if (instance == nil) {
-        instance = [[IJKAVMoviePlayerController alloc] initWithContentURLString:aUrl];
-    } else {
-        instance = [instance initWithContentURLString:aUrl];
-    }
-    return instance;
-}
-
-- (id)initWithContentURLString:(NSString *)aUrl
+- (id)initWithContentURLString:(NSString *)aUrl withOptions:(NSDictionary *)options
 {
     NSURL *url;
     if (aUrl == nil) {
@@ -225,16 +215,31 @@ static IJKAVMoviePlayerController* instance;
     else {
         url = [NSURL URLWithString:aUrl];
     }
-    self = [self initWithContentURL:url];
+    self = [self initWithContentURL:url withOptions:(NSDictionary *)options];
     if (self != nil) {
         
     }
     return self;
 }
 
+- (id)initWithContentURL:(NSURL *)aUrl
+{
+    return [self initWithContentURL:aUrl withOptions:nil];
+}
+
+- (id)initWithContentURLString:(NSString *)aUrl
+{
+    return [self initWithContentURLString:aUrl withOptions:nil];
+}
+
+-(AVPlayerItem *)playerItem {
+    return _playerItem;
+}
+
 - (void)setScreenOn: (BOOL)on
 {
-    [IJKMediaModule sharedModule].mediaModuleIdleTimerDisabled = on;
+    // do not manage idle timer here, use MySystemUtil instead
+    //    [IJKMediaModule sharedModule].mediaModuleIdleTimerDisabled = on;
 }
 
 - (void)dealloc
@@ -244,10 +249,8 @@ static IJKAVMoviePlayerController* instance;
 
 - (void)prepareToPlay
 {
-    AVURLAsset *asset = [AVURLAsset URLAssetWithURL:_playUrl options:nil];
     NSArray *requestedKeys = @[@"playable"];
-    
-    _playAsset = asset;
+    AVURLAsset *asset = _playAsset;
     [asset loadValuesAsynchronouslyForKeys:requestedKeys
                          completionHandler:^{
                              dispatch_async( dispatch_get_main_queue(), ^{
@@ -255,7 +258,7 @@ static IJKAVMoviePlayerController* instance;
                                  [[NSNotificationCenter defaultCenter]
                                   postNotificationName:IJKMPMovieNaturalSizeAvailableNotification
                                   object:self];
-
+                                 
                                  [self setPlaybackVolume:_playbackVolume];
                              });
                          }];
@@ -347,7 +350,7 @@ static IJKAVMoviePlayerController* instance;
 {
     if (!_player)
         return;
-
+    
     _seekingTime = aCurrentPlaybackTime;
     _isSeeking = YES;
     _bufferingProgress = 0;
@@ -356,7 +359,7 @@ static IJKAVMoviePlayerController* instance;
     if (_isPrerolling) {
         [_player pause];
     }
-
+    
     [_player seekToTime:CMTimeMakeWithSeconds(aCurrentPlaybackTime, NSEC_PER_SEC)
       completionHandler:^(BOOL finished) {
           dispatch_async(dispatch_get_main_queue(), ^{
@@ -374,10 +377,10 @@ static IJKAVMoviePlayerController* instance;
 {
     if (!_player)
         return 0.0f;
-
+    
     if (_isSeeking)
         return _seekingTime;
-
+    
     return CMTimeGetSeconds([_player currentTime]);
 }
 
@@ -386,11 +389,11 @@ static IJKAVMoviePlayerController* instance;
 #if 0
     if (_player == nil)
         return 0;
-
+    
     AVPlayerItem *playerItem = [_player currentItem];
     if (playerItem == nil)
         return 0;
-
+    
     NSArray *events = playerItem.accessLog.events;
     if (events != nil && events.count > 0) {
         MPMovieAccessLogEvent *currentEvent = [events objectAtIndex:events.count -1];
@@ -522,7 +525,7 @@ static IJKAVMoviePlayerController* instance;
                                                   object:_playerItem];
     
     /* Create a new instance of AVPlayerItem from the now successfully loaded AVAsset. */
-    _playerItem = [AVPlayerItem playerItemWithAsset:asset];
+    //    _playerItem = [AVPlayerItem playerItemWithAsset:asset];
     _playerItemKVO = [[IJKKVOController alloc] initWithTarget:_playerItem];
     [self registerApplicationObservers];
     /* Observe the player item "status" key to determine when it is ready to play. */
@@ -679,7 +682,7 @@ static IJKAVMoviePlayerController* instance;
         [self didPlaybackStateChange];
         [self didLoadStateChange];
         [self setScreenOn:NO];
- 
+        
         if (blockError == nil) {
             blockError = [[NSError alloc] init];
         }
@@ -721,7 +724,7 @@ static IJKAVMoviePlayerController* instance;
         [self didPlaybackStateChange];
         [self didLoadStateChange];
         [self setScreenOn:NO];
- 
+        
         [[NSNotificationCenter defaultCenter]
          postNotificationName:IJKMPMoviePlayerPlaybackDidFinishNotification
          object:self
@@ -906,27 +909,27 @@ static IJKAVMoviePlayerController* instance;
                              selector:@selector(audioSessionInterrupt:)
                                  name:AVAudioSessionInterruptionNotification
                                object:nil];
-
+    
     [_notificationManager addObserver:self
                              selector:@selector(applicationWillEnterForeground)
                                  name:UIApplicationWillEnterForegroundNotification
                                object:nil];
-
+    
     [_notificationManager addObserver:self
                              selector:@selector(applicationDidBecomeActive)
                                  name:UIApplicationDidBecomeActiveNotification
                                object:nil];
-
+    
     [_notificationManager addObserver:self
                              selector:@selector(applicationWillResignActive)
                                  name:UIApplicationWillResignActiveNotification
                                object:nil];
-
+    
     [_notificationManager addObserver:self
                              selector:@selector(applicationDidEnterBackground)
                                  name:UIApplicationDidEnterBackgroundNotification
                                object:nil];
-
+    
     [_notificationManager addObserver:self
                              selector:@selector(applicationWillTerminate)
                                  name:UIApplicationWillTerminateNotification
@@ -963,11 +966,11 @@ static IJKAVMoviePlayerController* instance;
 {
     if (_playAsset == nil)
         return CGSizeZero;
-
+    
     NSArray<AVAssetTrack *> *videoTracks = [_playAsset tracksWithMediaType:AVMediaTypeVideo];
     if (videoTracks == nil || videoTracks.count <= 0)
         return CGSizeZero;
-
+    
     return [videoTracks objectAtIndex:0].naturalSize;
 }
 

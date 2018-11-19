@@ -655,7 +655,9 @@ inline static int getPlayerOption(IJKFFOptionCategory category)
      object:self];
 
     _bufferingPosition = 0;
-    ijkmp_seek_to(_mediaPlayer, aCurrentPlaybackTime * 1000);
+    if (ijkmp_seek_to(_mediaPlayer, aCurrentPlaybackTime * 1000) != 0)  {
+        _seeking = NO;
+    }
 }
 
 - (NSTimeInterval)currentPlaybackTime
