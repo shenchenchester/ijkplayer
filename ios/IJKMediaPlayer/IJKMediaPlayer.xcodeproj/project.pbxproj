@@ -164,6 +164,8 @@
 		54CF8A541E15287D00309DD5 /* ijkutils.h in Headers */ = {isa = PBXBuildFile; fileRef = 54CF8A481E15287D00309DD5 /* ijkutils.h */; };
 		860B9AB7219EAA2100EC0C66 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 86D0DAB5219532EA001A03E3 /* libcrypto.a */; };
 		860B9AB8219EAA2100EC0C66 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 86D0DAB6219532EA001A03E3 /* libssl.a */; };
+		861E5AE421BFB9C300ACDF5C /* librtmp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 861E5AE321BFB9C300ACDF5C /* librtmp.a */; };
+		861E5AE521BFB9F000ACDF5C /* librtmp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 861E5AE321BFB9C300ACDF5C /* librtmp.a */; };
 		86AADE1221994DCA00892BC1 /* ijkstl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 86AADE1121994DCA00892BC1 /* ijkstl.cpp */; };
 		86AADE1321994DF700892BC1 /* ijkstl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 86AADE1121994DCA00892BC1 /* ijkstl.cpp */; };
 		86D0DAB7219532EB001A03E3 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 86D0DAB5219532EA001A03E3 /* libcrypto.a */; };
@@ -317,6 +319,7 @@
 		54CF8A461E15287D00309DD5 /* ijktree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ijktree.h; sourceTree = "<group>"; };
 		54CF8A471E15287D00309DD5 /* ijkutils.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ijkutils.c; sourceTree = "<group>"; };
 		54CF8A481E15287D00309DD5 /* ijkutils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ijkutils.h; sourceTree = "<group>"; };
+		861E5AE321BFB9C300ACDF5C /* librtmp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = librtmp.a; path = ../build/universal/lib/librtmp.a; sourceTree = "<group>"; };
 		86AADE1121994DCA00892BC1 /* ijkstl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ijkstl.cpp; sourceTree = "<group>"; };
 		86D0DAB5219532EA001A03E3 /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcrypto.a; path = ../build/universal/lib/libcrypto.a; sourceTree = "<group>"; };
 		86D0DAB6219532EA001A03E3 /* libssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libssl.a; path = ../build/universal/lib/libssl.a; sourceTree = "<group>"; };
@@ -473,6 +476,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				861E5AE521BFB9F000ACDF5C /* librtmp.a in Frameworks */,
 				860B9AB7219EAA2100EC0C66 /* libcrypto.a in Frameworks */,
 				860B9AB8219EAA2100EC0C66 /* libssl.a in Frameworks */,
 				5450B0471E63EABC00568494 /* libz.tbd in Frameworks */,
@@ -489,6 +493,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				861E5AE421BFB9C300ACDF5C /* librtmp.a in Frameworks */,
 				86D0DAB8219532EB001A03E3 /* libssl.a in Frameworks */,
 				E653C6F61BCE5A750016835A /* libavcodec.a in Frameworks */,
 				E653C6F81BCE5A750016835A /* libavfilter.a in Frameworks */,
@@ -660,6 +665,7 @@
 		E6903EBB17EAF6C500CFD954 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				861E5AE321BFB9C300ACDF5C /* librtmp.a */,
 				86D0DAB5219532EA001A03E3 /* libcrypto.a */,
 				86D0DAB6219532EA001A03E3 /* libssl.a */,
 				5450AF8F1E63E59800568494 /* libz.tbd */,
@@ -1404,7 +1410,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 0.8.8;
-				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = "";
 				DYLIB_COMPATIBILITY_VERSION = 1;

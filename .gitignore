@@ -1,5 +1,4 @@
 # -----
-build/
 ffmpeg-temp/
 android/ffmpeg-*
 android/openssl-*
@@ -34,7 +33,7 @@ local.properties
 # Android Studio
 .idea
 .gradle
-build/
+# build/
 
 # Xcode
 xcuserdata
